@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote of the Day</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0e12;
+      --surface: #16161d;
+      --accent: #d4a853;
+      --accent-dim: #d4a85322;
+      --text: #e8e4dc;
+      --text-muted: #8a8578;
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Atmospheric background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 30%, #d4a85308 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 70%, #d4a85305 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Subtle grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top ornament */
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeDown 1s ease 0.2s forwards;
+    }
+
+    .ornament .line {
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .ornament .diamond {
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--accent);
+      transform: rotate(45deg);
+    }
+
+    /* Date label */
+    .date-label {
+      font-family: var(--sans);
+      font-weight: 500;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeDown 1s ease 0.4s forwards;
+    }
+
+    /* Big opening quotation mark */
+    .quote-mark {
+      font-family: var(--serif);
+      font-size: 8rem;
+      line-height: 0.6;
+      color: var(--accent);
+      opacity: 0.15;
+      margin-bottom: -20px;
+      user-select: none;
+      animation: fadeIn 1.2s ease 0.5s forwards;
+      opacity: 0;
+    }
+
+    /* The quote itself */
+    .quote-text {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+      font-weight: 400;
+      line-height: 1.7;
+      color: var(--text);
+      padding: 0 20px;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.7s forwards;
+      transition: opacity 0.6s ease;
+    }
+
+    .quote-text em {
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    /* Author */
+    .author {
+      margin-top: 36px;
+      font-family: var(--sans);
+      font-weight: 300;
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      opacity: 0;
+      animation: fadeUp 1s ease 1s forwards;
+      transition: opacity 0.6s ease;
+    }
+
+    .author::before {
+      content: '— ';
+    }
+
+    /* Divider */
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      margin: 48px auto 0;
+      opacity: 0;
+      animation: fadeIn 1s ease 1.2s forwards;
+    }
+
+    /* Refresh button */
+    .refresh-btn {
+      margin-top: 32px;
+      background: transparent;
+      border: 1px solid var(--accent-dim);
+      color: var(--text-muted);
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.4s forwards;
+    }
+
+    .refresh-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-dim);
+    }
+
+    /* Fade classes for transitions */
+    .fade-out .quote-text,
+    .fade-out .author {
+      opacity: 0 !important;
+    }
+
+    /* Animations */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 480px) {
+      .quote-mark { font-size: 5rem; }
+      .ornament .line { width: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="ornament">
+      <span class="line"></span>
+      <span class="diamond"></span>
+      <span class="line"></span>
+    </div>
+
+    <div class="date-label" id="dateLabel"></div>
+
+    <div class="quote-mark">&ldquo;</div>
+    <p class="quote-text" id="quoteText"></p>
+    <p class="author" id="quoteAuthor"></p>
+
+    <div class="divider"></div>
+
+    <button class="refresh-btn" id="refreshBtn">New Quote</button>
+  </div>
+
+  <script>
+    const quotes = [
+      { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+      { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+      { text: "It is not the strongest who survive, but those most responsive to change.", author: "Charles Darwin" },
+      { text: "The mind is everything. What you think, you become.", author: "Buddha" },
+      { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+      { text: "What gets measured gets managed.", author: "Peter Drucker" },
+      { text: "The best time to plant a tree was twenty years ago. The second best time is now.", author: "Chinese Proverb" },
+      { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+      { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
+      { text: "Everything should be made as simple as possible, but not simpler.", author: "Albert Einstein" },
+      { text: "Knowing is not enough; we must apply. Willing is not enough; we must do.", author: "Goethe" },
+      { text: "Risk comes from not knowing what you are doing.", author: "Warren Buffett" },
+      { text: "The purpose of life is a life of purpose.", author: "Robert Byrne" },
+      { text: "Fortune favors the bold.", author: "Virgil" },
+      { text: "One must still have chaos in oneself to be able to give birth to a dancing star.", author: "Friedrich Nietzsche" },
+      { text: "The unexamined life is not worth living.", author: "Socrates" },
+      { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
+      { text: "Not everything that counts can be counted, and not everything that can be counted counts.", author: "William Bruce Cameron" },
+      { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
+      { text: "To improve is to change; to be perfect is to change often.", author: "Winston Churchill" },
+      { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+      { text: "He who has a why to live can bear almost any how.", author: "Friedrich Nietzsche" },
+      { text: "Do not go where the path may lead; go instead where there is no path and leave a trail.", author: "Ralph Waldo Emerson" },
+      { text: "The measure of intelligence is the ability to change.", author: "Albert Einstein" },
+      { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+      { text: "Correlation does not imply causation, but it does waggle its eyebrows suggestively.", author: "Randall Munroe" },
+      { text: "In God we trust; all others must bring data.", author: "W. Edwards Deming" },
+      { text: "The best thing about being a statistician is that you get to play in everyone's backyard.", author: "John Tukey" },
+      { text: "All models are wrong, but some are useful.", author: "George E.P. Box" },
+      { text: "Without data, you're just another person with an opinion.", author: "W. Edwards Deming" },
+      { text: "The goal is to turn data into information, and information into insight.", author: "Carly Fiorina" },
+    ];
+
+    // Pick a deterministic quote based on the day of the year
+    function getDayOfYear() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start;
+      return Math.floor(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function formatDate() {
+      return new Date().toLocaleDateString('en-US', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      });
+    }
+
+    function showQuote(index) {
+      const q = quotes[index % quotes.length];
+      document.getElementById('quoteText').textContent = q.text;
+      document.getElementById('quoteAuthor').textContent = q.author;
+    }
+
+    let currentIndex = getDayOfYear();
+
+    // Initialize
+    document.getElementById('dateLabel').textContent = formatDate();
+    showQuote(currentIndex);
+
+    // Refresh with transition
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      const container = document.querySelector('.container');
+      container.classList.add('fade-out');
+
+      setTimeout(() => {
+        currentIndex++;
+        showQuote(currentIndex);
+        container.classList.remove('fade-out');
+      }, 500);
+    });
+  </script>
+</body>
+</html>
