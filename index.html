@@ -305,6 +305,42 @@
       .bottom-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
       .quote-number { font-size: 4rem; top: 12px; right: 20px; }
     }
+
+    .about-section {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+  width: 90%;
+  text-align: center;
+  margin-top: 32px;
+  padding: 28px 36px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  opacity: 0;
+  animation: fadeUp 0.8s ease 1.3s forwards;
+}
+
+.about-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 12px;
+}
+
+.about-text {
+  font-family: var(--font-body);
+  font-weight: 300;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--white-muted);
+}
+    
   </style>
 </head>
 <body>
@@ -344,6 +380,11 @@
     </div>
   </div>
 
+<div class="about-section">
+  <p class="about-title">Why These Quotes</p>
+  <p class="about-text">Your sentences go here. Edit this text anytime to update your message.</p>
+</div>
+  
   <script>
     const quotes = [
       { text: "Sometimes I looked at them and sometimes they looked at me, but rarely did we look at one another.", author: "Kesey" },
